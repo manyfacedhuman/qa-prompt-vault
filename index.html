@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QA Prompt Vault • Telecom Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body { font-family: 'Inter', system_ui, sans-serif; }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .prompt-card {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .prompt-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen">
+  <div class="max-w-6xl mx-auto p-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center gap-2 bg-zinc-900 px-4 py-1.5 rounded-3xl mb-4 border border-zinc-800">
+        <i class="fas fa-shield-alt text-emerald-400"></i>
+        <span class="text-xs font-medium tracking-widest">PREMIUM</span>
+      </div>
+      <h1 class="text-5xl font-bold tracking-tight mb-3">
+        QA Prompt <span class="gradient-text">Vault</span>
+      </h1>
+      <p class="text-xl text-zinc-400 max-w-md mx-auto">
+        Telecom • OSS/BSS • Testing Mastery
+      </p>
+      <p class="text-sm text-zinc-500 mt-2">Crafted by Mohan S • QA Coach & Consultant</p>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-10">
+      <div class="relative">
+        <input 
+          type="text" 
+          id="searchInput"
+          placeholder="Search prompts... (billing, OSS, API, SQL)" 
+          class="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 rounded-3xl px-8 py-5 text-lg placeholder-zinc-500 outline-none transition-all"
+          onkeyup="filterPrompts()">
+        <i class="fas fa-search absolute right-8 top-1/2 -translate-y-1/2 text-zinc-500"></i>
+      </div>
+    </div>
+
+    <!-- Generator -->
+    <div class="glass rounded-3xl p-8 mb-12 border border-white/10">
+      <h2 class="text-2xl font-semibold mb-6 flex items-center gap-3">
+        <i class="fas fa-magic text-violet-400"></i>
+        Generate Custom Prompt
+      </h2>
+      <div class="flex flex-col md:flex-row gap-4">
+        <input type="text" id="customInput" 
+               placeholder="E.g., Postpaid billing with mid-cycle plan change and roaming" 
+               class="flex-1 bg-zinc-900 border border-zinc-700 rounded-3xl px-7 py-5 focus:outline-none focus:border-violet-500 text-lg">
+        <button onclick="generatePrompt()" 
+                class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 px-10 py-5 rounded-3xl font-semibold flex items-center gap-3 transition-all active:scale-95">
+          <i class="fas fa-sparkles"></i>
+          Generate
+        </button>
+      </div>
+      <div id="generatedPrompt" class="mt-6 hidden bg-zinc-900/70 border border-violet-500/30 rounded-3xl p-6"></div>
+    </div>
+
+    <!-- Prompts Grid -->
+    <div id="promptsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- JS injected -->
+    </div>
+  </div>
+
+  <footer class="text-center text-zinc-500 py-12 text-sm border-t border-zinc-900 mt-16">
+    Built for Telecom QA Professionals • Share with your network
+  </footer>
+
+  <script>
+    const prompts = [
+      // Original + New OSS/BSS focused prompts
+      { category: "OSS/BSS", title: "Billing Cycle Validation", text: "Generate comprehensive test cases for end-to-end postpaid billing cycle including data rollover, plan change mid-cycle, roaming charges, and invoice generation. Include edge cases and expected results." },
+      { category: "API", title: "Order Provisioning Flow", text: "Create detailed Postman test scenarios for complete order-to-activation flow in OSS/BSS: Customer creation → Service ordering → Provisioning → Confirmation." },
+      { category: "SQL", title: "Revenue Assurance Queries", text: "Write optimized SQL queries to validate CDR processing, usage aggregation, and revenue leakage detection across billing tables." },
+      { category: "Manual Testing", title: "SingleView Testing", text: "List critical user journeys and test scenarios for SingleView application covering customer 360, service management, and trouble ticketing." },
+      { category: "Interview", title: "Mid-Senior QA Interview", text: "Prepare 12 important interview questions with model answers on OSS/BSS, integration testing, and telecom domain challenges." },
+      { category: "Bug Reporting", title: "Professional Defect Report", text: "Transform this issue description into a high-quality bug report with steps to reproduce, severity, impact, and recommendations." },
+      
+      // New Prompts
+      { category: "OSS", title: "Service Provisioning", text: "Create detailed test scenarios for OSS service provisioning including new customer activation, plan upgrade/downgrade, suspension, and termination flows." },
+      { category: "BSS", title: "Complex Rating & Charging", text: "Generate test cases for rating engine covering tiered pricing, usage-based charging, bundle offers, discounts, taxes, and roaming settlements." },
+      { category: "Integration", title: "OSS-BSS Integration", text: "Design end-to-end integration test cases between OSS and BSS for order fulfillment, inventory sync, and real-time billing triggers." },
+      { category: "Performance", title: "High Volume Testing", text: "Suggest strategies and test scenarios for performance testing of OSS/BSS under high concurrent users and transaction load (peak hours)." },
+      { category: "Migration", title: "System Migration", text: "Outline testing strategy for migrating from legacy to new OSS/BSS including data migration validation, parallel run, and cutover testing." },
+      { category: "Automation", title: "API Automation Framework", text: "Design a robust automation framework approach for regression testing of OSS/BSS APIs using Java/Python + RestAssured or similar." },
+      { category: "Assurance", title: "Fault Management", text: "Create test cases for network fault management in OSS: alarm generation, correlation, notification, and SLA compliance." },
+      { category: "Security", title: "OSS/BSS Security Testing", text: "List key security test scenarios for OSS/BSS covering authentication, authorization, data privacy, and protection against common vulnerabilities." },
+      { category: "Reporting", title: "Business Intelligence Reports", text: "Generate validation scenarios for key management reports: Revenue, Customer Churn, Network Utilization, and KPI dashboards." },
+      { category: "5G / Modern", title: "5G Network Slicing", text: "Develop test cases for 5G network slicing in OSS covering slice creation, QoS enforcement, isolation, and billing per slice." },
+      { category: "Interview", title: "Behavioral + Domain Questions", text: "Provide 10 behavioral and domain-specific interview questions for Senior QA roles in Telecom OSS/BSS projects." },
+      { category: "Coaching", title: "Training Session Outline", text: "Create a structured outline for a 2-hour workshop on 'Effective OSS/BSS Testing Strategies' for junior QA engineers." }
+    ];
+
+    function renderPrompts(filteredPrompts) {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = '';
+      
+      filteredPrompts.forEach((prompt, index) => {
+        const card = document.createElement('div');
+        card.className = 'prompt-card glass rounded-3xl p-7 group';
+        card.innerHTML = `
+          <div class="flex justify-between mb-5">
+            <span class="text-xs uppercase tracking-widest font-medium px-4 py-2 bg-white/5 rounded-3xl text-violet-300">${prompt.category}</span>
+            <i class="fas fa-copy text-zinc-500 group-hover:text-violet-400 transition-colors"></i>
+          </div>
+          <h3 class="font-semibold text-xl mb-4 leading-tight">${prompt.title}</h3>
+          <p class="text-zinc-400 text-[15px] leading-relaxed mb-7 line-clamp-4">${prompt.text}</p>
+          <button onclick="copyPrompt(${index})" 
+                  class="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet-400 rounded-2xl font-medium transition-all flex items-center justify-center gap-2">
+            <i class="fas fa-copy"></i> Copy Prompt
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.copyPrompt = function(index) {
+      const promptText = prompts[index].text;
+      navigator.clipboard.writeText(promptText).then(() => {
+        showToast('✅ Prompt copied to clipboard');
+      });
+    };
+
+    window.generatePrompt = function() {
+      const input = document.getElementById('customInput').value.trim();
+      const output = document.getElementById('generatedPrompt');
+      
+      if (!input) return;
+      
+      const generated = `You are a Senior Telecom QA Engineer with 12+ years in OSS/BSS.\n\nCreate detailed, production-grade test scenarios for:\n"${input}"\n\nInclude:\n• Positive, negative & edge cases\n• Test data requirements\n• Expected results\n• Automation hints (Postman / SQL / API)\n• Risk & impact analysis`;
+      
+      output.innerHTML = `
+        <div class="flex items-start gap-4">
+          <i class="fas fa-sparkles text-2xl text-violet-400 mt-1"></i>
+          <div class="flex-1">
+            <div class="text-violet-300 text-sm mb-2 font-medium">AI GENERATED PROMPT</div>
+            <pre class="whitespace-pre-wrap text-sm text-zinc-300 leading-relaxed">${generated}</pre>
+            <button onclick="copyGenerated()" class="mt-5 text-violet-400 hover:text-violet-300 flex items-center gap-2 text-sm font-medium">
+              <i class="fas fa-copy"></i> Copy Prompt
+            </button>
+          </div>
+        </div>
+      `;
+      output.classList.remove('hidden');
+    };
+
+    window.copyGenerated = function() {
+      const text = document.getElementById('generatedPrompt').querySelector('pre').textContent;
+      navigator.clipboard.writeText(text);
+      showToast('✅ Generated prompt copied!');
+    };
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 bg-zinc-800 border border-zinc-700 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-50';
+      toast.innerHTML = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2200);
+    }
+
+    function filterPrompts() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = prompts.filter(p => 
+        p.title.toLowerCase().includes(term) || 
+        p.text.toLowerCase().includes(term) ||
+        p.category.toLowerCase().includes(term)
+      );
+      renderPrompts(filtered);
+    }
+
+    // Initialize
+    renderPrompts(prompts);
+  </script>
+</body>
+</html>
