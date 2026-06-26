@@ -1,7 +1,5 @@
 # QA Prompt Vault • Telecom Edition
 
-[![Live Demo](https://manyfacedhuman.github.io/qa-prompt-vault/)
-
 A **premium collection of AI-ready prompts** specifically crafted for Telecom QA Engineers, focused on **OSS/BSS**, Testing, Automation, and Career Growth.
 
 Built by **Mohan S** — Telecom QA Coach & Consultant with 10+ years of experience.
